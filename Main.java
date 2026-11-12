@@ -12,7 +12,7 @@ public class Main {
     public static class EmailOrder implements Order {
         public void send(String OrderData) { System.out.println("EMAIL " + OrderData); }
         public void save(String OrderData) throws Exception {
-            Files.writeString(Path.of("properOutput.txt"), OrderData + "\n", StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+            Files.writeString(Path.of("orders.txt"), OrderData + "\n", StandardOpenOption.CREATE, StandardOpenOption.APPEND);
         }
         public void refund(BigDecimal RefundValue) { throw new UnsupportedOperationException("Not supported"); }
     }
