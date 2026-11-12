@@ -49,10 +49,10 @@ public class Main {
             else if (customerType.equals("STUDENT")) productTotal = productTotal.multiply(new BigDecimal("0.95"));
 
 
-            if (a[4].equals("SAVE10")) productTotal = productTotal.multiply(new BigDecimal("0.9"));
+            if (splitedOrderDescription[4].equals("SAVE10")) productTotal = productTotal.multiply(new BigDecimal("0.9"));
 
             if (productTotal.compareTo(new BigDecimal("100")) < 0) productTotal = productTotal.add(new BigDecimal("12"));
-            
+
             productTotal = productTotal.multiply(new BigDecimal("1.23"));
             String x = "ORDER|" + customerName + "|" + detail + "|" + String.format(Locale.ROOT, "%.2f", productTotal);
             orderCount++;
