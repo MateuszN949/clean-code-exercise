@@ -21,15 +21,15 @@ public class Main {
     static BigDecimal orderTotalPrice = new BigDecimal("0.00");
     static Map<String, String> orderHistory = new HashMap<>();
 
-    static String doIt(String orderDescription, int action, boolean verbose, boolean send, boolean save) {
-        try {
-            if (action == 2) {
-                String x = "REPORT|" + orderCount + "|" + String.format(Locale.ROOT, "%.2f", orderTotalPrice);
+    static String DoReport(String orderDescription, int action, boolean verbose, boolean send, boolean save)
+    {
+                String x = "REPORT|" + orderCount + "|" + String.format(Locale.ROOT, "%.2f", orderTotalPrice);  
                 if (verbose) System.out.println(x);
                 return x;
-            }
-            if (action != 1) return "UNKNOWN";
-            String[] a = orderDescription.split("\\|", -1);
+    }
+    static String DoOrder(String orderDescription, int action, boolean verbose, boolean send, boolean save)
+    {
+         String[] a = orderDescription.split("\\|", -1);
             String n = a[0], e = a[1], t = a[2];
             String[] b = a[3].split(",");
             BigDecimal z = new BigDecimal("0.00");
@@ -59,6 +59,18 @@ public class Main {
             if (send) obj.send(e + "|" + x);
             if (verbose) System.out.println(x);
             return x;
+    }
+
+
+    static String doIt(String orderDescription, int action, boolean verbose, boolean send, boolean save) {
+        try {
+            switch(action)
+            {
+                case 1 -> return DoOrder(orderDescription,action,verbose,send,save);
+                case 2 -> return DoReport(orderDescription,action,verbose,send,save);
+                default -> return "UNKNOWN";
+            }
+           
         } catch (Exception ex) { return "ERROR"; }
     }
 
