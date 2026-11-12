@@ -4,27 +4,27 @@ import java.util.*;
 
 public class Main {
     public interface Order {
-        void send(String OrderData);
-        void save(String OrderData) throws Exception;
+        void send(String description);
+        void save(String description) throws Exception;
         void refund(BigDecimal RefundValue);
     }
 
     public static class EmailOrder implements Order {
-        public void send(String OrderData) { System.out.println("EMAIL " + OrderData); }
-        public void save(String OrderData) throws Exception {
-            Files.writeString(Path.of("orders.txt"), OrderData + "\n", StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+        public void send(String description) { System.out.println("EMAIL " + description); }
+        public void save(String description) throws Exception {
+            Files.writeString(Path.of("orders.txt"), description + "\n", StandardOpenOption.CREATE, StandardOpenOption.APPEND);
         }
         public void refund(BigDecimal RefundValue) { throw new UnsupportedOperationException("Not supported"); }
     }
 
-    static int orderCount = 0;
+    static int sentOrderCount = 0;
     static BigDecimal orderTotalPrice = new BigDecimal("0.00");
     static Map<String, String> orderHistory = new HashMap<>();
 
     static String doIt(String orderDescription, int action, boolean verbose, boolean send, boolean save) {
         try {
             if (action == 2) {
-                String x = "REPORT|" + orderCount + "|" + String.format(Locale.ROOT, "%.2f", orderTotalPrice);
+                String x = "REPORT|" + sentOrderCount + "|" + String.format(Locale.ROOT, "%.2f", orderTotalPrice);
                 if (verbose) System.out.println(x);
                 return x;
             }
@@ -51,7 +51,7 @@ public class Main {
             if (z.compareTo(new BigDecimal("100")) < 0) z = z.add(new BigDecimal("12"));
             z = z.multiply(new BigDecimal("1.23"));
             String x = "ORDER|" + n + "|" + detail + "|" + String.format(Locale.ROOT, "%.2f", z);
-            orderCount++;
+            sentOrderCount++;
             orderTotalPrice = orderTotalPrice.add(z);
             orderHistory.put(e, x);
             EmailOrder obj = new EmailOrder();
