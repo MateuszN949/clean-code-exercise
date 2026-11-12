@@ -19,6 +19,7 @@ The exercise is compact (roughly 70–100 lines per language) but combines sever
 | Consistency debt | State changes before file writing and notification | Failed persistence leaves the order counted; retries can double-count it. |
 | Financial debt | Binary floating point, implicit rounding policy | Introduce a defined monetary model without silently changing business rules. |
 | Operational debt | Hard-coded relative file path, synchronous append, no durable report state | Discuss the actual scope before adding databases or transactions. |
+| Intertangled logic | code that does diffrent things is in same fucnion in different branches of if statement | separate into different functions |
 
 The cache is written but never read; repeated orders overwrite its email entry. Removing it preserves all documented observable behavior. Unknown products currently cost zero. Negative quantities are accepted. Neither is a desired requirement: have students distinguish refactoring from correcting these behaviors.
 

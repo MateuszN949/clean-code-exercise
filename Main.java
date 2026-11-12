@@ -29,34 +29,34 @@ public class Main {
     }
     static String DoOrder(String orderDescription, int action, boolean verbose, boolean send, boolean save)
     {
-         String[] a = orderDescription.split("\\|", -1);
-            String n = a[0], e = a[1], t = a[2];
-            String[] b = a[3].split(",");
-            BigDecimal z = new BigDecimal("0.00");
+             String[] splitedOrderDescription = orderDescription.split("\\|", -1);
+            String customerName = splitedOrderDescription[0], customerEmail = splitedOrderDescription[1], customerType = splitedOrderDescription[2];
+            String[] productList = splitedOrderDescription[3].split(",");
+            BigDecimal productTotal = new BigDecimal("0.00");
             StringBuilder detail = new StringBuilder();
-            for (String q : b) {
-                String[] c = q.split(":");
-                BigDecimal p = switch (c[0]) {
+            for (String productTouple : b) {
+                String[] c = productTouple.split(":");
+                BigDecimal product = switch (c[0]) {
                     case "BOOK" -> new BigDecimal(40);
                     case "PEN" -> new BigDecimal(5);
                     case "BAG" -> new BigDecimal(80);
                     default -> new BigDecimal(0);
                 };
-                z = z.add(p.multiply(new BigDecimal(Integer.parseInt(c[1]))));
-                detail.append(c[0]).append("x").append(c[1]).append(";");
+                productTotal = productTotal.add(product.multiply(new BigDecimal(Integer.parseInt(c[1]))));
+                detail.append(product).append("x").append(c[1]).append(";");
             }
-            if (t.equals("VIP")) z = z.multiply(new BigDecimal("0.9"));
-            else if (t.equals("STUDENT")) z = z.multiply(new BigDecimal("0.95"));
-            if (a[4].equals("SAVE10")) z = z.multiply(new BigDecimal("0.9"));
-            if (z.compareTo(new BigDecimal("100")) < 0) z = z.add(new BigDecimal("12"));
-            z = z.multiply(new BigDecimal("1.23"));
-            String x = "ORDER|" + n + "|" + detail + "|" + String.format(Locale.ROOT, "%.2f", z);
+            if (customerType.equals("VIP")) productTotal = productTotal.multiply(new BigDecimal("0.9"));
+            else if (customerType.equals("STUDENT")) productTotal = productTotal.multiply(new BigDecimal("0.95"));
+            if (a[4].equals("SAVE10")) productTotal = productTotal.multiply(new BigDecimal("0.9"));
+            if (productTotal.compareTo(new BigDecimal("100")) < 0) productTotal = productTotal.add(new BigDecimal("12"));
+            productTotal = productTotal.multiply(new BigDecimal("1.23"));
+            String x = "ORDER|" + customerName + "|" + detail + "|" + String.format(Locale.ROOT, "%.2f", productTotal);
             orderCount++;
-            orderTotalPrice = orderTotalPrice.add(z);
-            orderHistory.put(e, x);
+            orderTotalPrice = orderTotalPrice.add(productTotal);
+            orderHistory.put(customerEmail, x);
             EmailOrder obj = new EmailOrder();
             if (save) obj.save(x);
-            if (send) obj.send(e + "|" + x);
+            if (send) obj.send(customerEmail + "|" + x);
             if (verbose) System.out.println(x);
             return x;
     }
