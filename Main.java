@@ -47,7 +47,7 @@ public class Main {
         return report;
     }
 
-    private static BigDecimal calculateOrderTotal(String[] productList, String customerType, String couponCode) {
+    static BigDecimal calculateOrderTotal(String[] productList, String customerType, String couponCode) {
 
         BigDecimal orderTotal = new BigDecimal("0.00");
 

@@ -48,34 +48,6 @@ class MainTest {
     }
 
     @Test
-    void shouldApplyStudentDiscount() throws Exception {
-
-        String result = Main.makeOrder(
-                "John|john@example.test|STUDENT|BOOK:1|NONE",
-                false, false, false
-        );
-
-        assertEquals(
-                "ORDER|John|BOOKx1;|61.50",
-                result
-        );
-    }
-
-    @Test
-    void shouldApplyVipDiscount() throws Exception {
-
-        String result = Main.makeOrder(
-                "Alice|alice@example.test|VIP|BOOK:1|NONE",
-                false, false, false
-        );
-
-        assertEquals(
-                "ORDER|Alice|BOOKx1;|59.04",
-                result
-        );
-    }
-
-    @Test
     void shouldApplyCouponAfterCustomerDiscount() throws Exception {
 
         String result = Main.makeOrder(
@@ -162,5 +134,60 @@ class MainTest {
         }
 
         assertEquals("", output.toString());
+    }
+
+    @Test
+    void shouldCalculateTotalForRegularCustomer() {
+        BigDecimal result = Main.calculateOrderTotal(
+                new String[]{"BOOK:2", "PEN:3"},
+                "REGULAR",
+                "NONE"
+        );
+
+        assertEquals(new BigDecimal("137.76"), result);
+    }
+
+    @Test
+    void shouldApplyVipDiscount() {
+        BigDecimal result = Main.calculateOrderTotal(
+                new String[]{"BOOK:2"},
+                "VIP",
+                "NONE"
+        );
+
+        assertEquals(new BigDecimal("88.56"), result);
+    }
+
+    @Test
+    void shouldApplyStudentDiscount() {
+        BigDecimal result = Main.calculateOrderTotal(
+                new String[]{"BOOK:2"},
+                "STUDENT",
+                "NONE"
+        );
+
+        assertEquals(new BigDecimal("92.84"), result);
+    }
+
+    @Test
+    void shouldApplyCouponDiscount() {
+        BigDecimal result = Main.calculateOrderTotal(
+                new String[]{"BOOK:2"},
+                "REGULAR",
+                "SAVE10"
+        );
+
+        assertEquals(new BigDecimal("103.32"), result);
+    }
+
+    @Test
+    void shouldNotAddDeliveryFeeWhenThresholdIsReached() {
+        BigDecimal result = Main.calculateOrderTotal(
+                new String[]{"BAG:1", "PEN:4"},
+                "REGULAR",
+                "NONE"
+        );
+
+        assertEquals(new BigDecimal("123.00"), result);
     }
 }
