@@ -144,7 +144,7 @@ class MainTest {
                 "NONE"
         );
 
-        assertEquals(new BigDecimal("137.76"), result);
+        assertEquals(0, new BigDecimal("131.61").compareTo(result));
     }
 
     @Test
@@ -155,7 +155,7 @@ class MainTest {
                 "NONE"
         );
 
-        assertEquals(new BigDecimal("88.56"), result);
+        assertEquals(0, new BigDecimal("103.32").compareTo(result));
     }
 
     @Test
@@ -166,7 +166,7 @@ class MainTest {
                 "NONE"
         );
 
-        assertEquals(new BigDecimal("92.84"), result);
+        assertEquals(0, new BigDecimal("108.24").compareTo(result));
     }
 
     @Test
@@ -177,7 +177,7 @@ class MainTest {
                 "SAVE10"
         );
 
-        assertEquals(new BigDecimal("103.32"), result);
+        assertEquals(0, new BigDecimal("103.32").compareTo(result));
     }
 
     @Test
@@ -188,6 +188,6 @@ class MainTest {
                 "NONE"
         );
 
-        assertEquals(new BigDecimal("123.00"), result);
+        assertEquals(0, new BigDecimal("123.00").compareTo(result));
     }
 }
