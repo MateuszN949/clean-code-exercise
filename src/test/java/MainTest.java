@@ -190,4 +190,26 @@ class MainTest {
 
         assertEquals(0, new BigDecimal("123.00").compareTo(result));
     }
+
+    @Test
+    void shouldCalculatePriceForMug() {
+        BigDecimal result = Main.calculateOrderTotal(
+                new String[]{"MUG:1"},
+                "REGULAR",
+                "NONE"
+        );
+
+        assertEquals(0, new BigDecimal("45.51").compareTo(result));
+    }
+
+    @Test
+    void shouldApplyEmployeeDiscount() {
+        BigDecimal result = Main.calculateOrderTotal(
+                new String[]{"BOOK:1"},
+                "EMPLOYEE",
+                "NONE"
+        );
+
+        assertEquals(0, new BigDecimal("56.58").compareTo(result));
+    }
 }

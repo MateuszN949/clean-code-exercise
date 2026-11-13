@@ -7,6 +7,7 @@ public class Main {
     private static final BigDecimal VIP_DISCOUNT = new BigDecimal("0.10");
     private static final BigDecimal STUDENT_DISCOUNT = new BigDecimal("0.05");
     private static final BigDecimal COUPON_DISCOUNT = new BigDecimal("0.10");
+    private static final BigDecimal EMPLOYEE_DISCOUNT = new BigDecimal("0.15");
     private static final BigDecimal FREE_DELIVERY_THRESHOLD = new BigDecimal("100.00");
     private static final BigDecimal DELIVERY_FEE = new BigDecimal("12.00");
     private static final BigDecimal TAX_RATE = new BigDecimal("0.23");
@@ -61,17 +62,19 @@ public class Main {
                 case "BOOK" -> new BigDecimal("40.00");
                 case "PEN" -> new BigDecimal("5.00");
                 case "BAG" -> new BigDecimal("80.00");
+                case "MUG" -> new BigDecimal("25.00");
                 default -> new BigDecimal("0.00");
             };
 
             orderTotal = orderTotal.add(productPrice.multiply(BigDecimal.valueOf(quantity)));
         }
 
-        if (customerType.equals("VIP")) {
-            orderTotal = orderTotal.multiply(BigDecimal.ONE.subtract(VIP_DISCOUNT));
-        } else if (customerType.equals("STUDENT")) {
-            orderTotal = orderTotal.multiply(BigDecimal.ONE.subtract(STUDENT_DISCOUNT));
-        }
+        orderTotal = switch (customerType) {
+            case "VIP" -> orderTotal.multiply(BigDecimal.ONE.subtract(VIP_DISCOUNT));
+            case "STUDENT" -> orderTotal.multiply(BigDecimal.ONE.subtract(STUDENT_DISCOUNT));
+            case "EMPLOYEE" -> orderTotal.multiply(BigDecimal.ONE.subtract(EMPLOYEE_DISCOUNT));
+            default -> orderTotal;
+        };
 
         if (couponCode.equals("SAVE10")) {
             orderTotal = orderTotal.multiply(BigDecimal.ONE.subtract(COUPON_DISCOUNT));
