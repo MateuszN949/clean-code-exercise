@@ -47,44 +47,68 @@ public class Main {
         return report;
     }
 
+    private static BigDecimal calculateOrderTotal(String[] productList, String customerType, String couponCode) {
+
+        BigDecimal orderTotal = new BigDecimal("0.00");
+
+        for (String productTuple : productList) {
+            String[] productFields = productTuple.split(":");
+
+            String productCode = productFields[PRODUCT_CODE_INDEX];
+            int quantity = Integer.parseInt(productFields[PRODUCT_QUANTITY_INDEX]);
+
+            BigDecimal productPrice = switch (productCode) {
+                case "BOOK" -> new BigDecimal("40.00");
+                case "PEN" -> new BigDecimal("5.00");
+                case "BAG" -> new BigDecimal("80.00");
+                default -> new BigDecimal("0.00");
+            };
+
+            orderTotal = orderTotal.add(productPrice.multiply(BigDecimal.valueOf(quantity)));
+        }
+
+        if (customerType.equals("VIP")) {
+            orderTotal = orderTotal.multiply(BigDecimal.ONE.subtract(VIP_DISCOUNT));
+        } else if (customerType.equals("STUDENT")) {
+            orderTotal = orderTotal.multiply(BigDecimal.ONE.subtract(STUDENT_DISCOUNT));
+        }
+
+        if (couponCode.equals("SAVE10")) {
+            orderTotal = orderTotal.multiply(BigDecimal.ONE.subtract(COUPON_DISCOUNT));
+        }
+
+        if (orderTotal.compareTo(FREE_DELIVERY_THRESHOLD) < 0) {
+            orderTotal = orderTotal.add(DELIVERY_FEE);
+        }
+
+        return orderTotal.multiply(BigDecimal.ONE.add(TAX_RATE));
+    }
+
+    private static String formatOrder(String customerName, StringBuilder orderDetails, BigDecimal orderTotal) {
+        return "ORDER|" + customerName + "|" + orderDetails + "|" + String.format(Locale.ROOT, "%.2f", orderTotal);
+    }
+
     static String makeOrder(String orderDescription, boolean verbose, boolean sendNotification, boolean saveOrder) throws Exception {
         String[] orderFields = orderDescription.split("\\|", -1);
         String customerName = orderFields[CUSTOMER_NAME_INDEX];
         String customerEmail = orderFields[CUSTOMER_EMAIL_INDEX];
         String customerType = orderFields[CUSTOMER_TYPE_INDEX];
+
         String[] productList = orderFields[PRODUCTS_INDEX].split(",");
 
-        BigDecimal orderTotal = new BigDecimal("0.00");
+        BigDecimal orderTotal = calculateOrderTotal(productList, customerType, orderFields[COUPON_INDEX]);
+
         StringBuilder orderDetails = new StringBuilder();
-        for (String productTuple : productList) {
-            String[] productFields = productTuple.split(":");
 
+        for (String productEntry : productList) {
+            String[] productFields = productEntry.split(":");
             String productCode = productFields[PRODUCT_CODE_INDEX];
-            int quantity = Integer.parseInt(
-                    productFields[PRODUCT_QUANTITY_INDEX]
-            );
+            String quantity = productFields[PRODUCT_QUANTITY_INDEX];
 
-            BigDecimal productPrice = switch (productCode) {
-                case "BOOK" -> new BigDecimal(40);
-                case "PEN" -> new BigDecimal(5);
-                case "BAG" -> new BigDecimal(80);
-                default -> new BigDecimal(0);
-            };
-
-            orderTotal = orderTotal.add(productPrice.multiply(BigDecimal.valueOf(quantity)));
             orderDetails.append(productCode).append("x").append(quantity).append(";");
         }
 
-        if (customerType.equals("VIP")) orderTotal = orderTotal.multiply(BigDecimal.ONE.subtract(VIP_DISCOUNT));
-        else if (customerType.equals("STUDENT")) orderTotal = orderTotal.multiply(BigDecimal.ONE.subtract(STUDENT_DISCOUNT));
-
-        if (orderFields[COUPON_INDEX].equals("SAVE10")) orderTotal = orderTotal.multiply(BigDecimal.ONE.subtract(COUPON_DISCOUNT));
-
-        if (orderTotal.compareTo(FREE_DELIVERY_THRESHOLD) < 0) orderTotal = orderTotal.add(DELIVERY_FEE);
-
-        orderTotal = orderTotal.multiply(BigDecimal.ONE.add(TAX_RATE));
-
-        String orderResult = "ORDER|" + customerName + "|" + orderDetails + "|" + String.format(Locale.ROOT, "%.2f", orderTotal);
+        String orderResult = formatOrder(customerName, orderDetails, orderTotal);
 
         processedOrderCount++;
         orderTotalPrice = orderTotalPrice.add(orderTotal);
