@@ -2,19 +2,16 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class MainTest {
 
     @BeforeEach
     void resetState() {
-        Main.sentOrderCount = 0;
+        Main.processedOrderCount = 0;
         Main.orderTotalPrice = BigDecimal.ZERO;
         Main.orderHistory.clear();
     }
@@ -22,12 +19,12 @@ class MainTest {
     @Test
     void shouldProcessDemonstrationOrdersCorrectly() throws Exception {
 
-        String aliceOrder = Main.MakeOrder(
+        String aliceOrder = Main.makeOrder(
                 "Alice|alice@example.test|VIP|BOOK:2,PEN:3|SAVE10",
                 false, false, false
         );
 
-        String bobOrder = Main.MakeOrder(
+        String bobOrder = Main.makeOrder(
                 "Bob|bob@example.test|REGULAR|BAG:2|NONE",
                 false, false, false
         );
@@ -42,18 +39,18 @@ class MainTest {
                 bobOrder
         );
 
-        assertEquals(2, Main.sentOrderCount);
+        assertEquals(2, Main.processedOrderCount);
 
         assertEquals(
                 "REPORT|2|306.21",
-                Main.MakeReport(false)
+                Main.makeReport(false)
         );
     }
 
     @Test
     void shouldApplyStudentDiscount() throws Exception {
 
-        String result = Main.MakeOrder(
+        String result = Main.makeOrder(
                 "John|john@example.test|STUDENT|BOOK:1|NONE",
                 false, false, false
         );
@@ -67,7 +64,7 @@ class MainTest {
     @Test
     void shouldApplyVipDiscount() throws Exception {
 
-        String result = Main.MakeOrder(
+        String result = Main.makeOrder(
                 "Alice|alice@example.test|VIP|BOOK:1|NONE",
                 false, false, false
         );
@@ -81,7 +78,7 @@ class MainTest {
     @Test
     void shouldApplyCouponAfterCustomerDiscount() throws Exception {
 
-        String result = Main.MakeOrder(
+        String result = Main.makeOrder(
                 "Alice|alice@example.test|VIP|BOOK:2|SAVE10",
                 false, false, false
         );
@@ -96,7 +93,7 @@ class MainTest {
     void shouldAddDeliveryWhenDiscountedSubtotalIsBelow100()
             throws Exception {
 
-        String result = Main.MakeOrder(
+        String result = Main.makeOrder(
                 "John|john@example.test|REGULAR|BAG:1,PEN:3|NONE",
                 false, false, false
         );
@@ -111,7 +108,7 @@ class MainTest {
     void shouldNotAddDeliveryWhenSubtotalIsExactly100()
             throws Exception {
 
-        String result = Main.MakeOrder(
+        String result = Main.makeOrder(
                 "John|john@example.test|REGULAR|BAG:1,PEN:4|NONE",
                 false, false, false
         );
@@ -125,7 +122,7 @@ class MainTest {
     @Test
     void shouldGenerateEmptyReport() {
 
-        String result = Main.MakeReport(false);
+        String result = Main.makeReport(false);
 
         assertEquals("REPORT|0|0.00", result);
     }
@@ -134,14 +131,14 @@ class MainTest {
     void shouldGenerateReportAfterProcessingOrder()
             throws Exception {
 
-        Main.MakeOrder(
+        Main.makeOrder(
                 "John|john@example.test|REGULAR|BOOK:1|NONE",
                 false, false, false
         );
 
         assertEquals(
                 "REPORT|1|63.96",
-                Main.MakeReport(false)
+                Main.makeReport(false)
         );
     }
 
@@ -155,7 +152,7 @@ class MainTest {
         try {
             System.setOut(new PrintStream(output));
 
-            Main.MakeOrder(
+            Main.makeOrder(
                     "John|john@example.test|REGULAR|BOOK:1|NONE",
                     false, false, false
             );
